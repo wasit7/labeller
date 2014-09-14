@@ -486,7 +486,7 @@ jQuery(function($){
 	}
 	
 	$("#prev").on("click", function(event) {
-		submit(event)
+// 		submit(event)
 		current_index = order.indexOf(current_path)
 		prev_index = Math.max(0, current_index - 1)
 		select_image(order[prev_index])
@@ -495,7 +495,7 @@ jQuery(function($){
 	})
 	
 	$("#next").on("click", function(event) {
-		submit(event)
+// 		submit(event)
 		current_index = order.indexOf(current_path)
 		next_index = Math.min(order.length - 1, current_index + 1)
 		select_image(order[next_index])
@@ -504,6 +504,7 @@ jQuery(function($){
 	})
 	
 	$("#submit").on("click", function(event) {
+		submit(event)
 		$("#next").click()
 	})
 	
@@ -571,10 +572,16 @@ jQuery(function($){
 			return 
 		}
 		
+		if (event.keyCode == 13) {
+			event.preventDefault();
+			$("#submit").click()
+		}
 		if (event.keyCode == 37) {
+			event.preventDefault();
 			$("#prev").click()
 		}
 		if (event.keyCode == 39) {
+			event.preventDefault();
 			$("#next").click()
 		}
 	})
