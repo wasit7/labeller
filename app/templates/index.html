@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title>Label Application</title>
+
+		<meta name="description" content="" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+		<!-- bootstrap & fontawesome -->
+		<link rel="stylesheet" href="/static/assets/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/static/assets/css/font-awesome.min.css" />
+
+		<!-- page specific plugin styles -->
+		<link rel="stylesheet" type="text/css" href="/static/assets/css/imgareaselect-default.css" />
+
+		<!-- text fonts -->
+		<link rel="stylesheet" href="/static/assets/css/ace-fonts.css" />
+
+		<!-- ace styles -->
+		<link rel="stylesheet" href="/static/assets/css/ace.min.css" id="main-ace-style" />
+
+		<!--[if lte IE 9]>
+			<link rel="stylesheet" href="/static/assets/css/ace-part2.min.css" />
+		<![endif]-->
+		<link rel="stylesheet" href="/static/assets/css/ace-skins.min.css" />
+		<link rel="stylesheet" href="/static/assets/css/ace-rtl.min.css" />
+
+		<!--[if lte IE 9]>
+		  <link rel="stylesheet" href="/static/assets/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+		<script src="/static/assets/js/ace-extra.min.js"></script>
+
+		<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+		<!--[if lte IE 8]>
+		<script src="/static/assets/js/html5shiv.min.js"></script>
+		<script src="/static/assets/js/respond.min.js"></script>
+		<![endif]-->
+
+		<style>
+			.navbar .navbar-brand {
+				font-size: 18px;
+			}
+			div.inline {
+				display: inline-block;
+				vertical-align: middle;
+				margin-left: 50px;
+				margin-right: 50px;
+			}
+			.hidden {
+				display : none;
+			}
+			#list > button > span {
+				padding-right : 20px;
+			}
+			div.frame{
+				background-color : #eee;
+				margin: 20px;
+			}
+		</style>
+
+
+	</head>
+
+	<body class="no-skin">
+		<!-- #section:basics/navbar.layout -->
+		<div id="navbar" class="navbar navbar-default">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<!-- #section:basics/sidebar.mobile.toggle -->
+				<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler">
+					<span class="sr-only">Toggle sidebar</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+				<!-- /section:basics/sidebar.mobile.toggle -->
+				<div class="navbar-header pull-left">
+					<!-- #section:basics/navbar.layout.brand -->
+					<a href="#" class="navbar-brand">
+							<i class="fa fa-pencil-square-o"></i>
+							Label
+					</a>
+					<a href="#" class="navbar-brand">
+							<i class="ace-icon fa fa-hdd-o"></i> <span id="path-view"></span>
+					</a>
+				</div>
+				<div class="navbar-buttons navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+						<li class="light-orange">
+							<a href="#" id="path-selection" data-toggle="modal" data-target="#path-modal">
+								Select Base
+							</a>
+						</li>
+						<li class="purple">
+							<a href="#" id="prev">
+								<i class="ace-icon fa fa-arrow-left icon-on-left"></i> Previous
+							</a>
+						</li>
+						<li class="purple">
+							<a href="#" id="next">
+								<i class="ace-icon fa fa-arrow-right icon-on-right"></i> Next
+							</a>
+						</li>
+						<li class="green">
+							<a href="#" id="submit">
+								<i class="ace-icon fa fa-check-square-o"></i> Submit
+							</a>
+						</li>
+						<li class="red">
+							<a href="#" id="clear">
+								<i class="ace-icon fa fa-times"></i> Clear
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div><!-- /.navbar-container -->
+		</div>
+
+		<!-- /section:basics/navbar.layout -->
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+			<!-- /section:basics/sidebar -->
+			<div class="main-content">
+				<div class="page-content">
+					<div class="page-content-area">
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+
+								<!-- #section:plugins/fuelux.treeview -->
+								<div class="row">
+
+									<div class="col-sm-3">
+										<div class="widget-box widget-color-green2">
+											<div class="widget-header">
+												<h4 class="widget-title lighter smaller">Browse Files</h4>
+												<p>Base: <span id="base-path"></p>
+											</div>
+
+											<div class="widget-body">
+												<div class="widget-main padding-8" id="tree-box">
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-sm-7 text-center background-frame">
+										<div class="inline frame" id="image-box">
+											<div id="overlay"></div>
+										</div>
+									</div>
+
+									<div class="col-sm-2">
+										<div class="widget-box widget-color-blue">
+											<div class="widget-header">
+												<h4 class="widget-title lighter smaller">Labels</h4>
+											</div>
+											<div class="widget-body">
+												<div class="widget-main padding-8">
+													<div id="list"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- PAGE CONTENT ENDS -->
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content-area -->
+				</div><!-- /.page-content -->
+			</div><!-- /.main-content -->
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<div class="modal fade" id="path-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="myModalLabel">Select Path</h4>
+					</div>
+					<div class="modal-body" id="path-tree-box">
+						<div id="pathtreeview" class="tree"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="select-path">Select <span id="selected-path">...</span></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='/static/assets/js/jquery.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='/static/assets/js/jquery1x.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+		<script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="/static/assets/js/bootstrap.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+		<script src="/static/assets/js/fuelux/fuelux.tree.min.js"></script>
+		<script src="/static/assets/js/bootbox.min.js"></script>
+		<script src="/static/assets/js/d3.v3.3.6.js"></script>
+		<script src="/static/assets/js/colorbrewer.v1.min.js"></script>
+		<!-- ace scripts -->
+		<script src="/static/assets/js/ace-elements.min.js"></script>
+		<!-- ace scripts -->
+		<script src="/static/assets/js/ace-elements.min.js"></script>
+		<script src="/static/assets/js/ace.min.js"></script>
+
+		<script type="text/javascript" src="/static/assets/js/jquery.imgareaselect.pack.js"></script>
+		<!-- inline scripts related to this page -->
+		<script type="text/javascript">
+jQuery(function($){
+	var svg = d3.select("div#overlay").append("svg")
+		.attr("width", "100%")
+		.attr("height","100%")
+	var svg_img = svg.append('image')
+		.attr('image-rendering','optimizeQuality')
+		.attr('x','0')
+		.attr('y','0')
+		.attr('id','image-target')
+	var rectangles = svg.append('g')
+	
+	var DataSourceTree = function(options) {
+		this._data	= options.data;
+		this._delay = options.delay;
+	}
+	//var my_colorbrewer = colorbrewer['Set3'];
+	var my_colorbrewer = ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]; //SET3
+	//console.log("COLOR : ",colorbrewer);
+
+	function DataSourcePathTree(options) {
+		this.url = options.url;
+		
+		this.data = function(options, callback) {
+			console.log('options', options)
+			var path = null
+			if( !('name' in options || 'type' in options) ){
+				path = '-root-';//load first level data
+			}
+			else if('type' in options && options['type'] == 'folder') {//it has children
+				if('additionalParameters' in options && 'children' in options.additionalParameters)
+					path = options.additionalParameters['path']
+			}
+			
+			$('#selected-path').html(path)
+			if(path !== null) {
+				$.ajax({
+					url: this.url,
+					data: 'path='+path,
+					type: 'POST',
+					dataType: 'json',
+					success : function(response) {
+						console.log('data', response.data)
+						if(response.status == "OK")
+							callback({ data: response.data })
+					},
+					error: function(response) {
+						//console.log(response);
+					}
+				})
+			}
+		}
+	}
+	
+	$('#pathtreeview').ace_tree({
+		dataSource: new DataSourcePathTree({url: '/browse'}) ,
+		multiSelect: true,
+		cacheItems: false,
+		loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+		'open-icon' : 'ace-icon fa fa-folder-open',
+		'close-icon' : 'ace-icon fa fa-folder',
+		'selectable' : true,
+		'selected-icon' : null,
+		'unselected-icon' : null
+	});
+
+	var DataSourceTree = function(options) {
+		this._data	= options.data;
+		this._delay = options.delay;
+	}
+
+	DataSourceTree.prototype.data = function(options, callback) {
+		var self = this;
+		var $data = null;
+
+		if(!("name" in options) && !("type" in options)){
+			$data = this._data;//the root tree
+			callback({ data: $data });
+			console.log('tree-root', options, $data)
+			return;
+		}
+		else if("type" in options && options.type == "folder") {
+			if("additionalParameters" in options && "children" in options.additionalParameters)
+				$data = options.additionalParameters.children;
+			else $data = {}//no data
+		}
+
+		if($data != null) {
+			callback({ data: $data })
+		}
+
+		console.log('tree', options, $data)
+
+	};
+	
+	var order = []
+	var tree_data = {}
+	var base_path = ''
+	var current_path = ''
+
+	function select_image(path) {
+		current_path = path
+// 			$('#image-target').data('path', path)
+// 			$('#path-view').html(path)
+		$('#path-view').html(path.replace(base_path, '[Base]'))
+		
+		if (path.indexOf('/') == 0) {
+			path = '_root_' + path.substring(1, path.length)
+		}
+// 			$('#image-target').attr('src', '/images/'+path.replace(/\.\./g, '_parent_'))
+		$('#list').html('');
+		//IMAGE
+		img_path = '/images/'+path.replace(/\.\./g, '_parent_');
+		var img = new Image();
+		img.src = img_path;
+		img.onload = function() {
+			var width = this.width;
+			var height = this.height;
+			$('div.frame').width(width);
+			$('div.frame').height(height);
+			svg
+				.attr('height', height)
+				.attr('width',width)
+			svg_img 
+				.attr('height', height)
+				.attr('width',width)
+				.attr('xlink:href', img_path)
+		}
+		$.ajax({
+			type: "GET",
+			contentType : 'application/json',
+			url: '/record/'+path.replace(/\.\./g, '_parent_'),
+			success: function (resp) {
+				console.log('record', resp);
+				if (resp.record != null) {
+					resp.record.labels.forEach(function(d) {
+						console.log('d', d)
+						var used_colors = []
+						$('#list').children().each(function(index) {
+							used_colors.push($(this).data('json').color)
+						})
+						var id = $('#list').children().length + 1
+						var text = {'label': d.label, 'id': d.label}; 
+						text['x'] = d.x;
+						text['y'] = d.y;
+						text['w'] = d.w;
+						text['h'] = d.h;
+						text['color'] = '';
+						var diff = $(my_colorbrewer).not(used_colors).get();
+						if (diff.length > 0){
+							text['color'] = diff[0];
+						}else{
+							var random_index = Math.floor((Math.random() * my_colorbrewer.length) + 0);
+							text['color'] = my_colorbrewer[random_index];
+						}
+						createLabel(text);
+					})
+				}
+			}
+		})
+	}
+
+	function select_path(image_base) {
+		base_path = image_base
+		$.ajax({
+			type: "POST",
+			url: '/info',
+			data: {'image_base': image_base},
+			success: function (resp) {
+				console.log('done', resp); 
+				base_path = resp.base_path
+				$('#base-path').html(base_path.replace(/\//g, '<wbr>/'))
+				order = resp.order
+				tree_data = resp.files
+				console.log('tree_data', tree_data)
+				console.log('order', order)
+	
+				var treeDataSource = new DataSourceTree({data: tree_data});
+
+				$('#tree-box').html('<div id="tree" class="tree"></div>')
+
+				$('#tree').ace_tree({
+					multiSelect: false,
+					dataSource: treeDataSource ,
+					loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+					'open-icon' : 'ace-icon fa fa-folder-open',
+					'close-icon' : 'ace-icon fa fa-folder',
+					'selectable' : true,
+					'selected-icon' : null,
+					'unselected-icon' : null
+				});
+
+				$('#tree').on('selected.fu.tree', function () {
+					var selected = $('#tree').tree('selectedItems')[0]
+					select_image(selected.path)
+				})
+
+				if (order.length > 0) {
+					select_image(order[0])
+				}
+			}
+		})
+	}
+
+	$("#select-path").click(function() {
+		select_path($('#selected-path').html())
+		$('#path-modal').modal('hide')
+	})
+
+	function submit(event) {
+		console.log('submit')
+		var rects = []
+		$('#list').children().each(function(i, d) {
+			var data = $(d).data('json')
+			rects.push({
+				"h": data.h, 
+				"label": data.id, 
+				"w": data.w, 
+				"y": data.y, 
+				"x": data.x
+			})
+		})
+
+		var img = $('#image-target');
+		console.log(img, img.attr('width'), img.attr('height'))
+
+		resp = {
+			'path': current_path,
+			'width': parseInt(img.attr('width')),
+			'height': parseInt(img.attr('height')),
+			'labels': rects
+		}
+		console.log('resp', resp)
+		$('#list').html('');
+
+		$.ajax({
+			type: "POST",
+			contentType : 'application/json',
+			url: '/submit',
+			data: JSON.stringify(resp),
+			success: function () {
+				console.log('done', resp); 
+			}
+		})
+		event.preventDefault();
+		drawLabel()
+	}
+	
+	$("#prev").on("click", function(event) {
+		submit(event)
+		current_index = order.indexOf(current_path)
+		prev_index = Math.max(0, current_index - 1)
+		select_image(order[prev_index])
+		event.preventDefault();
+		drawLabel();
+	})
+	
+	$("#next").on("click", function(event) {
+		submit(event)
+		current_index = order.indexOf(current_path)
+		next_index = Math.min(order.length - 1, current_index + 1)
+		select_image(order[next_index])
+		event.preventDefault();
+		drawLabel();
+	})
+	
+	$("#submit").on("click", function(event) {
+		$("#next").click()
+	})
+	
+	$("#clear").on("click", function(event) {
+		console.log('clear')
+		$('#list').html('');
+		event.preventDefault();
+		drawLabel();
+	})
+
+	$('div#overlay').imgAreaSelect({
+	//$('img.photo').imgAreaSelect({
+		handles: true,
+		autoHide: true,
+		onSelectEnd: function (img, selection) {
+			var parent = $(img).parent().parent();
+			//console.log('PARAM : ',img,selection);
+			if(selection.x1 == selection.x2 && selection.y1 == selection.y2) return ;
+			var used_colors = []
+			$('#list').children().each(function(index) {
+				//console.log("DATA : ",$(this).data())
+				used_colors.push($(this).data('json').color)
+			})
+// 			var text = {'id': $('ol.list').children().length + 1 }; 
+			var id = $('#list').children().length + 1
+			var text = {'label': id}; 
+			text['x'] = selection.x1;
+			text['y'] = selection.y1;
+			text['w'] = selection.x2-selection.x1;
+			text['h'] = selection.y2-selection.y1;
+			text['color'] = '';
+			var diff = $(my_colorbrewer).not(used_colors).get();
+			if (diff.length > 0){
+				text['color'] = diff[0];
+			}else{
+				var random_index = Math.floor((Math.random() * my_colorbrewer.length) + 0);
+				text['color'] = my_colorbrewer[random_index];
+			}
+			console.log("DIFF : ",diff);
+			
+			bootbox.prompt("What is your label name?", function(result) {
+				if (result === null) {
+					
+				} else {
+					text.id = result;
+					createLabel(text);
+				}
+				//$('div.imgareaselect-outer').click();
+			});
+			
+			$('div.bootbox').click(function(){
+				var classname = event.target.className;
+				//console.log("CLASS : ",classname);
+				if(classname == "bootbox modal fade bootbox-prompt in"){
+					bootbox.hideAll();
+				}
+			});
+		}
+	});
+
+	$('body').keydown(function(event) {
+		console.log( event );
+		
+		if (event.target.tagName == 'INPUT') {
+			return 
+		}
+		
+		if (event.keyCode == 37) {
+			$("#prev").click()
+		}
+		if (event.keyCode == 39) {
+			$("#next").click()
+		}
+	})
+
+	function createLabel(text){
+		var element = $("<button class='btn-block' data-json='"+JSON.stringify(text)+"'><span> #"+text.id+"</span><a href='#' data-action='close'><i class='ace-icon fa fa-times'></i></a></button>");
+		element.css({backgroundColor: text.color});
+		console.log("BUTTON : ",element,element.css("background-color"));
+		$('#list').prepend(element);
+		$('a[data-action=close]').click(function(){
+			var button = $(this).parent();
+			button.remove();
+			drawLabel();
+		});
+		drawLabel();
+	}
+	
+	function drawLabel(){
+		var rects = []
+		$('#list').children().each(function(index) {
+			//console.log("DATA : ",$(this).data())
+			rects.push($(this).data('json'))
+		})
+		//REMOVE 
+// 		rectangles.selectAll("rect.myrect").remove()
+// 		rectangles.selectAll("text.mytext").remove()
+		//UPDATE
+		var myrect = rectangles.selectAll("rect.myrect").data(rects)
+		var mytext = rectangles.selectAll("text.mytext").data(rects)
+		console.log("MYRECT : ",myrect);
+		//EXIT
+		myrect.exit().remove()
+		mytext.exit().remove()
+		//ENTER
+		myrect.enter()
+			.append("rect")
+				.attr("class", "myrect")
+		mytext.enter()
+			.append('text')
+				.attr("class", "mytext")
+		//UPDATE
+		myrect
+				.attr("x", function(d){return d.x;})
+				.attr("y", function(d){return d.y;})
+				.attr("width",function(d){return d.w;})
+				.attr("height", function(d){return d.h;})
+				.attr("fill", function(d){return d.color;})
+				.attr("fill-opacity", 0.25)
+				.attr("stroke", function(d){return d.color;})
+				.attr("stroke-width", 2)
+		mytext
+				.attr("font-size","28px")
+				.attr("x", function(d){return d.x;})
+				.attr("y", function(d){return d.y;})
+				.attr("dx",function(d){return d.w/2;})
+				.attr("dy", function(d){return d.h/2;})
+				.attr("fill", function(d){return d.color;})
+				.style("text-anchor", "middle")
+				.style("text-shadow", "0 0 1px #111")
+				.style("font-weight", "bold")
+				.text(function(d){return d.id;})
+		
+	}
+});
+		</script>
+		
+		<!-- the following scripts are used in demo only for onpage help and you don't need them -->
+		<link rel="stylesheet" href="/static/assets/css/ace.onpage-help.css" />
+		<link rel="stylesheet" href="/static/assets/js/themes/sunburst.css" />
+
+		<script type="text/javascript"> ace.vars['base'] = '..'; </script>
+		<script src="/static/assets/js/ace/elements.onpage-help.js"></script>
+		<script src="/static/assets/js/ace/ace.onpage-help.js"></script>
+		<script src="/static/assets/js/rainbow.js"></script>
+		<script src="/static/assets/js/language/generic.js"></script>
+		<script src="/static/assets/js/language/html.js"></script>
+		<script src="/static/assets/js/language/css.js"></script>
+		<script src="/static/assets/js/language/javascript.js"></script>
+	</body>
+</html>
