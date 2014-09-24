@@ -250,7 +250,7 @@ jQuery(function($){
 	var rectangles = svg.append('g')
 	
 	var DataSourceTree = function(options) {
-		this._data	= options.data;
+		this._data = options.data;
 		this._delay = options.delay;
 	}
 	//var my_colorbrewer = colorbrewer['Set3'];
@@ -261,7 +261,7 @@ jQuery(function($){
 		this.url = options.url;
 		
 		this.data = function(options, callback) {
-			console.log('options', options)
+			//console.log('options', options)
 			var path = null
 			if( !('name' in options || 'type' in options) ){
 				path = '-root-';//load first level data
@@ -279,7 +279,7 @@ jQuery(function($){
 					type: 'POST',
 					dataType: 'json',
 					success : function(response) {
-						console.log('data', response.data)
+						//console.log('data', response.data)
 						if(response.status == "OK")
 							callback({ data: response.data })
 					},
@@ -315,7 +315,7 @@ jQuery(function($){
 		if(!("name" in options) && !("type" in options)){
 			$data = this._data;//the root tree
 			callback({ data: $data });
-			console.log('tree-root', options, $data)
+			//console.log('tree-root', options, $data)
 			return;
 		}
 		else if("type" in options && options.type == "folder") {
@@ -328,7 +328,7 @@ jQuery(function($){
 			callback({ data: $data })
 		}
 
-		console.log('tree', options, $data)
+		//console.log('tree', options, $data)
 
 	};
 	
@@ -336,17 +336,19 @@ jQuery(function($){
 	var tree_data = {}
 	var base_path = ''
 	var current_path = ''
+	var current_req_id = 0
+	var current_resp_id = 0
 
 	function select_image(path) {
 		current_path = path
-// 			$('#image-target').data('path', path)
-// 			$('#path-view').html(path)
+//			$('#image-target').data('path', path)
+//			$('#path-view').html(path)
 		$('#path-view').html(path.replace(base_path, '[Base]'))
 		
 		if (path.indexOf('/') == 0) {
 			path = '_root_' + path.substring(1, path.length)
 		}
-// 			$('#image-target').attr('src', '/images/'+path.replace(/\.\./g, '_parent_'))
+//			$('#image-target').attr('src', '/images/'+path.replace(/\.\./g, '_parent_'))
 		$('#list').html('');
 		//IMAGE
 		img_path = '/images/'+path.replace(/\.\./g, '_parent_');
@@ -365,15 +367,22 @@ jQuery(function($){
 				.attr('width',width)
 				.attr('xlink:href', img_path)
 		}
+		current_req_id = current_req_id + 1
 		$.ajax({
-			type: "GET",
-			contentType : 'application/json',
+			type: "POST",
 			url: '/record/'+path.replace(/\.\./g, '_parent_'),
+			data: {'req_id': current_req_id},
 			success: function (resp) {
-				console.log('record', resp);
+				//console.log('record', resp);
+				//console.log('id', resp.req_id, current_req_id, resp.req_id != current_req_id)
+				if (resp.req_id != current_req_id) {
+					//console.log('Ignore old request')
+					return ;
+				}
+				current_resp_id = resp.req_id
 				if (resp.record != null) {
 					resp.record.labels.forEach(function(d) {
-						console.log('d', d)
+						//console.log('d', d)
 						var used_colors = []
 						$('#list').children().each(function(index) {
 							used_colors.push($(this).data('json').color)
@@ -406,13 +415,13 @@ jQuery(function($){
 			url: '/info',
 			data: {'image_base': image_base},
 			success: function (resp) {
-				console.log('done', resp); 
+				//console.log('done', resp); 
 				base_path = resp.base_path
 				$('#base-path').html(base_path.replace(/\//g, '<wbr>/'))
 				order = resp.order
 				tree_data = resp.files
-				console.log('tree_data', tree_data)
-				console.log('order', order)
+				//console.log('tree_data', tree_data)
+				//console.log('order', order)
 	
 				var treeDataSource = new DataSourceTree({data: tree_data});
 
@@ -447,7 +456,7 @@ jQuery(function($){
 	})
 
 	function submit(event) {
-		console.log('submit')
+		//console.log('submit')
 		var rects = []
 		$('#list').children().each(function(i, d) {
 			var data = $(d).data('json')
@@ -461,7 +470,7 @@ jQuery(function($){
 		})
 
 		var img = $('#image-target');
-		console.log(img, img.attr('width'), img.attr('height'))
+		//console.log(img, img.attr('width'), img.attr('height'))
 
 		resp = {
 			'path': current_path,
@@ -469,24 +478,30 @@ jQuery(function($){
 			'height': parseInt(img.attr('height')),
 			'labels': rects
 		}
-		console.log('resp', resp)
+		//console.log('resp', resp)
 		$('#list').html('');
 
-		$.ajax({
-			type: "POST",
-			contentType : 'application/json',
-			url: '/submit',
-			data: JSON.stringify(resp),
-			success: function () {
-				console.log('done', resp); 
-			}
-		})
+		if (current_resp_id == current_req_id) {
+			//console.log('Save records')
+			$.ajax({
+				type: "POST",
+				contentType : 'application/json',
+				url: '/submit',
+				data: JSON.stringify(resp),
+				success: function () {
+					//console.log('done', resp); 
+				}
+			})
+		}
+		else {
+			//console.log('Ignore records')
+		}
 		event.preventDefault();
 		drawLabel()
 	}
 	
 	$("#prev").on("click", function(event) {
-// 		submit(event)
+//		submit(event)
 		current_index = order.indexOf(current_path)
 		prev_index = Math.max(0, current_index - 1)
 		select_image(order[prev_index])
@@ -495,7 +510,7 @@ jQuery(function($){
 	})
 	
 	$("#next").on("click", function(event) {
-// 		submit(event)
+//		submit(event)
 		current_index = order.indexOf(current_path)
 		next_index = Math.min(order.length - 1, current_index + 1)
 		select_image(order[next_index])
@@ -509,7 +524,7 @@ jQuery(function($){
 	})
 	
 	$("#clear").on("click", function(event) {
-		console.log('clear')
+		//console.log('clear')
 		$('#list').html('');
 		event.preventDefault();
 		drawLabel();
@@ -528,7 +543,7 @@ jQuery(function($){
 				//console.log("DATA : ",$(this).data())
 				used_colors.push($(this).data('json').color)
 			})
-// 			var text = {'id': $('ol.list').children().length + 1 }; 
+//			var text = {'id': $('ol.list').children().length + 1 }; 
 			var id = $('#list').children().length + 1
 			var text = {'label': id}; 
 			text['x'] = selection.x1;
@@ -543,7 +558,7 @@ jQuery(function($){
 				var random_index = Math.floor((Math.random() * my_colorbrewer.length) + 0);
 				text['color'] = my_colorbrewer[random_index];
 			}
-			console.log("DIFF : ",diff);
+			//console.log("DIFF : ",diff);
 			
 			bootbox.prompt("What is your label name?", function(result) {
 				if (result === null) {
@@ -566,7 +581,7 @@ jQuery(function($){
 	});
 
 	$('body').keydown(function(event) {
-		console.log( event );
+		//console.log( event );
 		
 		if (event.target.tagName == 'INPUT') {
 			return 
@@ -589,7 +604,7 @@ jQuery(function($){
 	function createLabel(text){
 		var element = $("<button class='btn-block' data-json='"+JSON.stringify(text)+"'><span> #"+text.id+"</span><a href='#' data-action='close'><i class='ace-icon fa fa-times'></i></a></button>");
 		element.css({backgroundColor: text.color});
-		console.log("BUTTON : ",element,element.css("background-color"));
+		//console.log("BUTTON : ",element,element.css("background-color"));
 		$('#list').prepend(element);
 		$('a[data-action=close]').click(function(){
 			var button = $(this).parent();
@@ -606,12 +621,12 @@ jQuery(function($){
 			rects.push($(this).data('json'))
 		})
 		//REMOVE 
-// 		rectangles.selectAll("rect.myrect").remove()
-// 		rectangles.selectAll("text.mytext").remove()
+//		rectangles.selectAll("rect.myrect").remove()
+//		rectangles.selectAll("text.mytext").remove()
 		//UPDATE
 		var myrect = rectangles.selectAll("rect.myrect").data(rects)
 		var mytext = rectangles.selectAll("text.mytext").data(rects)
-		console.log("MYRECT : ",myrect);
+		//console.log("MYRECT : ",myrect);
 		//EXIT
 		myrect.exit().remove()
 		mytext.exit().remove()

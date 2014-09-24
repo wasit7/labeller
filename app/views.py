@@ -87,8 +87,9 @@ def image(filename):
         print filename
     return send_file(filename)
 
-@app.route('/record/<path:filename>')
+@app.route('/record/<path:filename>', methods = ['POST'])
 def record(filename):
+    req_id = request.form['req_id']
     if filename.startswith('_root_'):
         filename = filename.replace('_root_', '/')
     else:
@@ -98,7 +99,7 @@ def record(filename):
         rec = json.loads(open(filename, 'r').read())
     except:
         rec = None
-    return jsonify(status='OK', record=rec)
+    return jsonify(status='OK', record=rec, req_id=req_id)
 
 @app.route('/submit', methods=['POST'])
 def submit():
